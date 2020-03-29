@@ -2,6 +2,8 @@ version: '3.6'
 
 services:
   backend:
+    build:
+      target: dev-stage
     image: dev/happynanny_backend
     ports:
       - "9900:9900"
