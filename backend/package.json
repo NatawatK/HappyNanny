@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "tsc && node ./dist/server.js",
-    "dev": "nodemon -e ts  --exec \"npm run compile\""
+    "compile": "tsc",
+    "serve": "tsc && node ./dist/server.js",
+    "dev": "nodemon -e ts  --exec \"npm run serve\""
   },
   "author": "",
   "license": "ISC",
@@ -16,5 +17,9 @@
     "express-validator": "^6.4.0",
     "firebase-admin": "^8.10.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "nodemon": "^2.0.2",
+    "tsc": "^1.20150623.0",
+    "typescript": "^3.8.3"
+  }
 }
