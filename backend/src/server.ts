@@ -3,7 +3,7 @@ import { router } from './controllers'
 const bodyParser = require('body-parser')
 
 // Constants
-const PORT = 8080
+const PORT = 9900
 const HOST = '0.0.0.0'
 
 // App

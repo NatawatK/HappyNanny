@@ -6,6 +6,8 @@ services:
       ENV: production
 
   frontend:
+    build:
+      target: production-stage
     environment:
       ENV: production
 
