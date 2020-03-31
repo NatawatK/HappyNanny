@@ -7,6 +7,8 @@ services:
     image: dev/happynanny_backend
     ports:
       - "9900:9900"
+    volumes: 
+      - ./backend/src:/app/src
     environment:
       ENV: development
 
@@ -16,9 +18,8 @@ services:
     image: dev/happynanny_frontend
     ports:
       - "8080:8080"
-    # uncomment for hot reload
-    # volumes: 
-    #   - ./frontend/src:/app/src
+    volumes: 
+      - ./frontend/src:/app/src
     links:
       - backend
     environment:
