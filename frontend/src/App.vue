@@ -15,7 +15,7 @@
           app
         >
           <v-list dense>
-            <template v-for="item in items">
+            <template v-for="item in channels">
               <v-row v-if="item.heading" :key="item.heading" align="center">
                 <v-col cols="6">
                   <v-subheader v-if="item.heading">
@@ -168,18 +168,22 @@
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld';
 
 export default {
   name: "App",
   props: {
     source: String
   },
+  created() {
+
+
+  },
   data: () => ({
     dialog: false,
     drawer: null,
+    channels: [],
     items: [
-      { icon: "mdi-contacts", text: "Contacts" },
+      { icon: "mdi-contacts", text: "Channels" },
       { icon: "mdi-history", text: "Frequently contacted" },
       { icon: "mdi-content-copy", text: "Duplicates" },
       {

@@ -49,9 +49,9 @@
                 >{{ toggleBtn }}</v-btn
               >
               <v-spacer />
-              <v-btn color="primary" @click="proceed">{{
-                confirmButton
-              }}</v-btn>
+              <v-btn color="primary" @click="proceed">
+                {{ confirmButton }}
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -62,6 +62,7 @@
 
 <script>
 import firebase from "firebase";
+import UserRepository from '../repository/UserRepository';
 export default {
   name: "Login",
   data: function() {
@@ -80,7 +81,8 @@ export default {
     },
     login() {
       firebase.auth().signInWithEmailAndPassword(this.email, this.password)
-        .then(() => {
+        .then((res) => {
+          console.log(res)
           this.$router.push({ name: "Home" });
         })
         .catch(function(error) {
@@ -91,16 +93,29 @@ export default {
     },
     register() {
       if (this.password !== this.confirmPassword) return;
+      var uid
       firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
-        .then(() => {
-          this.$router.push({ name: "Home" });
+        .then((res) => {
+          // this.$router.push({ name: "Home" });
+          uid = res.user.uid
+          console.log(res)
+          UserRepository.create(uid, this.firstName, this.lastName, "Male").then(() => {
+            this.$router.push({ name: "Home" });
+          }).catch((err) => {
+            alert(err)
+          })
         })
         .catch(function(error) {
           // var errorCode = error.code;
           var errorMessage = error.message;
           alert(errorMessage);
         });
+
     }
+  },
+  created() {
+    UserRepository.getAll().then(res => console.log(res)
+    )
   },
   computed: {
     loginMode() {
