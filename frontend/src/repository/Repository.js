@@ -1,9 +1,22 @@
 import axios from 'axios'
-import { BACKEND_PATH } from '../apiConfigure'
-
-console.log(BACKEND_PATH)
+import firebase from 'firebase'
 const baseUrl = '/api'
 
-export default axios.create({
-  baseUrl,
+const axiosInstance =  axios.create({
+  baseURL: baseUrl,
 })
+
+axiosInstance.interceptors.request.use(async config => {
+  const token = await firebase.auth().currentUser.getIdToken();
+
+  if (token) {
+    config.headers['AuthToken'] = token;
+  }
+
+  return config
+}, (error) => {
+  return Promise.reject(error)
+})
+
+export default axiosInstance
+

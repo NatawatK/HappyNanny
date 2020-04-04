@@ -1,6 +1,6 @@
 import Repository from './Repository';
 
-let endpoint = '/api/channels'
+let endpoint = '/channels'
 
 export default {
   getAll(){

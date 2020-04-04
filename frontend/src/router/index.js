@@ -48,7 +48,7 @@ router.beforeEach((to, from, next) => {
   // const requiresAuth = to.matched.some(x => x.meta.requiresAuth)
   const currentUser = firebase.auth().currentUser
   console.log(currentUser)
-  localStorage.setItem('uid', currentUser.uid)
+  if(currentUser) localStorage.setItem('uid', currentUser.uid)
   if (to.name !== 'Login' && !currentUser) {
     next('/login')
   } else if (to.name !== 'Login' && currentUser) {

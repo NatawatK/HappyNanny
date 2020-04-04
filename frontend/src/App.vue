@@ -168,9 +168,6 @@
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld';
-
-import UserRepository from './repository/UserRepository';
 
 export default {
   name: "App",
@@ -178,11 +175,8 @@ export default {
     source: String
   },
   created() {
-    const uid = localStorage.getItem('uid')
-    UserRepository.get(uid).then(res => {
-      console.log(res.data)
-      this.channels = res.data.channels.map( e => ({ icon: "mdi-contacts", text : e }))
-    })
+
+
   },
   data: () => ({
     dialog: false,

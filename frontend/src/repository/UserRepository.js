@@ -1,6 +1,6 @@
 import Repository from './Repository';
 
-let endpoint = '/api/users'
+let endpoint = '/users'
 
 export default {
   getAll(){

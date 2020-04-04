@@ -49,9 +49,9 @@
                 >{{ toggleBtn }}</v-btn
               >
               <v-spacer />
-              <v-btn color="primary" @click="proceed">{{
-                confirmButton
-              }}</v-btn>
+              <v-btn color="primary" @click="proceed">
+                {{ confirmButton }}
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -81,7 +81,8 @@ export default {
     },
     login() {
       firebase.auth().signInWithEmailAndPassword(this.email, this.password)
-        .then(() => {
+        .then((res) => {
+          console.log(res)
           this.$router.push({ name: "Home" });
         })
         .catch(function(error) {
