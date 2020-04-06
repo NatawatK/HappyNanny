@@ -1,4 +1,6 @@
-import { db } from './db'
+import { db, adminFirestoreFieldValue } from '../db'
+import { NoUserError } from '../errors'
+import get from 'lodash/get'
 
 // interfaces
 interface CreateUserInput {
@@ -6,6 +8,11 @@ interface CreateUserInput {
   firstName: string
   lastName: string
   gender: string
+}
+
+interface CheckAuthorityInput {
+  userId: string
+  channelId: string
 }
 
 // get all users
@@ -25,11 +32,10 @@ const getUser = async (userId: number) => {
     const doc = db.collection('users').doc(userId)
     const user = await doc.get()
 
-    console.log('check user exist from get user', user.exists)
-
     return user.data()
   } catch (err) {
     console.log('Error getting user', err)
+    throw err
   }
 }
 
@@ -55,8 +61,71 @@ const createUser = async (input: CreateUserInput) => {
   }
 }
 
+// Check user authority
+const checkAuthority = async (input: CheckAuthorityInput) => {
+  try {
+    const { userId, channelId } = input
+    const userRef = db.collection('users').doc(userId)
+    const user = await userRef.get()
+    
+    if (!user) {
+      throw new NoUserError('No user')
+    }
+    
+    if (user && get(user.data(), 'channels').includes(channelId)) {
+      return true
+    }
+  
+    return false
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+}
+
+// Add Channel to user.channel
+const addChannelToUser = (input: { targetId: string, channelId: string }) => {
+  try {
+    const { targetId, channelId } = input
+    db.collection('users').doc(targetId).update({
+      channels: adminFirestoreFieldValue.arrayUnion(channelId)
+    })
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+}
+
+// Remove Channel from user
+const removeChannelFromUser = (input: { targetId: string, channelId: string }) => {
+  try {
+    const { targetId, channelId } = input
+    db.collection('users').doc(targetId).update({
+      channels: adminFirestoreFieldValue.arrayRemove(channelId)
+    })
+  } catch (err) {
+    console.log(err)
+    throw err
+  }
+}
+
+// Remove Channel from users list
+const removeChannelFromUsersList = (channelId: string, userIdsList: string[]) => {
+  try {
+    userIdsList.forEach(userId => {
+      removeChannelFromUser({ targetId: userId, channelId })
+    })
+  } catch (err) {
+    throw err
+  }
+}
+
 export {
   createUser,
   getAllUsers,
-  getUser
+  getUser,
+  checkAuthority,
+  addChannelToUser,
+  removeChannelFromUser,
+  removeChannelFromUsersList
 }
