@@ -95,9 +95,10 @@ channelRouter.post('/addUser', checkAuth, async (req, res) => {
 
     // Add user to member list
     const userToInsert = await getUserExcludeChannels(id)
-    const newCollection = await addUserToMember({ channelId, user: userToInsert })
+    await addUserToMember({ channelId, user: userToInsert })
 
-    return res.send(newCollection)
+    const newChannel = await getChannel(channelId)
+    return res.send(newChannel)
   } catch (err) {
     return res.send(err.message)
   }
@@ -120,8 +121,9 @@ channelRouter.delete('/user', checkAuth, async (req, res) => {
     removeChannelFromUser({ targetId: id, channelId })
     
     // remove user from members
-    const dbRes = await removeUserFromMember({ targetId: id, channelId })
-    return res.send(dbRes)
+    await removeUserFromMember({ targetId: id, channelId })
+    const newChannel = getChannel(channelId)
+    return res.send(newChannel)
   } catch (err) {
     return res.send(err.message)
   }
@@ -170,9 +172,9 @@ channelRouter.post('/createEvent', checkAuth, async (req, res) => {
     if (!hasAuthority) {
       return res.status(400).send('Authority required')
     }
-    const createdEvent = await createEvent(req.body)
+    const createdEventId = await createEvent(req.body)
     
-    return res.send(createdEvent)
+    return res.send({ ...req.body, id: createdEventId })
   } catch (err) {
     return res.send(err.message)
   }
@@ -181,7 +183,6 @@ channelRouter.post('/createEvent', checkAuth, async (req, res) => {
 // Get Event
 channelRouter.get('/event/:channelId/:eventId', checkAuth, async (req, res) => {
   const { channelId, eventId } = req.params
-  console.log({ channelId, eventId })
   if (!channelId || !eventId) {
     return res.status(400).send('wrong params')
   }
@@ -197,7 +198,6 @@ channelRouter.get('/event/:channelId/:eventId', checkAuth, async (req, res) => {
     }
 
     const event = await getEvent({ channelId, eventId })
-    console.log('event outer', event)
     return res.send(event)
   } catch (err) {
     return res.send(err.message)
@@ -207,7 +207,6 @@ channelRouter.get('/event/:channelId/:eventId', checkAuth, async (req, res) => {
 // Delete Event
 channelRouter.delete('/event', checkAuth, async (req, res) => {
   const { channelId, eventId } = req.body
-  console.log({ channelId, eventId })
   if (!channelId || !eventId) {
     return res.status(400).send('wrong params')
   }
@@ -222,8 +221,9 @@ channelRouter.delete('/event', checkAuth, async (req, res) => {
       return res.status(400).send('Authority required')
     }
 
-    const newChannel = await deleteEvent({ channelId, eventId })
+    await deleteEvent({ channelId, eventId })
     
+    const newChannel = getChannel(channelId)
     return res.send(newChannel)
   } catch (err) {
     return res.send(err.message)
@@ -234,7 +234,6 @@ channelRouter.delete('/event', checkAuth, async (req, res) => {
 channelRouter.put('/event', checkAuth, async (req, res) => {
   const { channelId, eventId } = req.body
   const event = req.body
-  console.log({ channelId, eventId })
   if (!channelId || !eventId) {
     return res.status(400).send('wrong params')
   }
@@ -249,7 +248,8 @@ channelRouter.put('/event', checkAuth, async (req, res) => {
       return res.status(400).send('Authority required')
     }
 
-    const newChannel = await updateEvent({ channelId, eventId, event })
+    await updateEvent({ channelId, eventId, event })
+    const newChannel = getChannel(channelId)
     
     return res.send(newChannel)
   } catch (err) {
