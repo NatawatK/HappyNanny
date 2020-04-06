@@ -1,6 +1,6 @@
 const admin = require('firebase-admin')
 
-let serviceAccount = require('../../happy-nanny-11d71-firebase-adminsdk-dk8k5-683bb7bc89.json')
+let serviceAccount = require('../happy-nanny-11d71-firebase-adminsdk-dk8k5-683bb7bc89.json')
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -11,6 +11,7 @@ const db = admin.firestore()
 const adminFirestoreFieldValue = admin.firestore.FieldValue
 
 export {
+  admin,
   db,
   adminFirestoreFieldValue
 }
