@@ -5,6 +5,6 @@ import { channelRouter } from '../controllers/channel'
 const router = express.Router()
 
 router.use('/users', userRouter)
-router.use('/channel', channelRouter)
+router.use('/channels', channelRouter)
 
 export { router }
