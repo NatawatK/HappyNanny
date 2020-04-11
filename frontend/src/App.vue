@@ -51,7 +51,7 @@
                   </v-list-item-content>
                 </v-list-item>
               </v-list-group>
-              <v-list-item v-else :key="item.text" link>
+              <v-list-item v-else :key="item.text" link :to="item.to">
                 <v-list-item-action>
                   <v-icon>{{ item.icon }}</v-icon>
                 </v-list-item-action>
@@ -169,13 +169,20 @@
 
 <script>
 
+import UserRepository from './repository/UserRepository';
+
 export default {
   name: "App",
   props: {
     source: String
   },
   created() {
-
+    const uid = localStorage.getItem('uid')
+    if(uid !== undefined){
+      UserRepository.get(uid).then(res => {
+        this.channels = res.data.channels.map( e => ({ text: e, to: `/channel/${e}`}))
+      })
+    }
 
   },
   data: () => ({

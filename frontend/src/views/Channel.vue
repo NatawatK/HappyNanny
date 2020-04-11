@@ -1,39 +1,55 @@
 <template>
   <div>
-    <div class="header">
-      <v-toolbar
-        flat
-      >
-        <v-toolbar-title>Channel</v-toolbar-title>
-        <v-toolbar-items>
-          <v-btn text v-for="tab in menu" v-bind:key="tab.text">{{ tab.text }}</v-btn>
-        </v-toolbar-items>
-
-      </v-toolbar>
-    </div>
-    <div class="content" style="background: grey"></div>
+    <h1>Channel: {{ name }}</h1>
+    <h2>Owner: {{ ownerName }}</h2>
+    <v-layout>
+      <v-col class="align-center-center">
+        <v-row v-for="event in events" :key="event.id">
+          <event-card :details="event"/>
+        </v-row>
+      </v-col>
+    </v-layout>
   </div>
-
 </template>
 
 <script>
+  import ChannelRepository from '../repository/ChannelRepository';
+  import EventCard from '../components/EventCard';
+
   export default {
     name: "Channel",
-    data: function(){
-      return {
-          events: [],
-          menu: [
-            {
-              text: 'Event',
-            },
-            {
-              text: 'Setting',
-            }
-          ]
+    components: {
+      EventCard,
+    },
+    created() {
+      console.log(this.$route.params)
+      this.channelId = this.$route.params.id
+    },
+    data : () => ({
+      channelId: null,
+      name: null,
+      owner: null,
+      members: null,
+      events: null,
+    }),
+    watch: {
+      channelId() {
+        ChannelRepository.get(this.channelId).then(({data}) => {
+          console.log(data)
+          const { events, members, name, owner } = data
+          this.name = name
+          this.members = members
+          this.owner = owner
+          this.events = events
+        })
+      },
+    },
+    computed: {
+      ownerName() {
+        return `${this.owner.firstName} ${this.owner.lastName}`
       }
     }
   }
-
 </script>
 
 <style scoped>
