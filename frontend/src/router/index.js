@@ -14,9 +14,9 @@ const routes = [
     component: Home,
   },
   {
-    path: "/channel",
-    name: "channel",
-    component: () => import('../views/Channel'),
+    path: '/channel/:id',
+    name: "Channel",
+    component: () => import(/* webpackChunkName: "channel" */ '../views/Channel.vue'),
   },
   {
     path: "/about",
@@ -28,7 +28,7 @@ const routes = [
     path: "/login",
     name: "Login",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/Login.vue")
+      import(/* webpackChunkName: "login" */ "../views/Login.vue")
   },
   {
     path: "/logout",
