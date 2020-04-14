@@ -9,10 +9,10 @@ export default {
   get(channelId){
     return Repository.get(`${endpoint}/${channelId}`)
   },
-  create(name, owner){
+  create(name){
     let body = {
       name: name,
-      owner: owner,
+      members: []
     }
     return Repository.post(endpoint, body)
   }

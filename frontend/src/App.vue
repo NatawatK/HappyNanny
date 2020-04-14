@@ -15,7 +15,7 @@
           app
         >
           <v-list dense>
-            <template v-for="item in channels">
+            <template v-for="item in channelRender">
               <v-row v-if="item.heading" :key="item.heading" align="center">
                 <v-col cols="6">
                   <v-subheader v-if="item.heading">
@@ -63,6 +63,13 @@
               </v-list-item>
             </template>
           </v-list>
+          <template v-slot:append>
+            <v-btn
+              @click="onCreateNewChannel"
+            >
+              Create new channel
+            </v-btn>
+          </template>
         </v-navigation-drawer>
 
         <v-app-bar
@@ -101,67 +108,67 @@
         <v-content>
           <router-view></router-view>
         </v-content>
-        <v-btn
-          bottom
-          color="pink"
-          dark
-          fab
-          fixed
-          right
-          @click="dialog = !dialog"
-        >
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-        <v-dialog v-model="dialog" width="800px">
-          <v-card>
-            <v-card-title class="grey darken-2">
-              Create contact
-            </v-card-title>
-            <v-container>
-              <v-row class="mx-2">
-                <v-col class="align-center justify-space-between" cols="12">
-                  <v-row align="center" class="mr-0">
-                    <v-avatar size="40px" class="mx-3">
-                      <img
-                        src="//ssl.gstatic.com/s2/oz/images/sge/grey_silhouette.png"
-                        alt=""
-                      />
-                    </v-avatar>
-                    <v-text-field placeholder="Name" />
-                  </v-row>
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field
-                    prepend-icon="mdi-account-card-details-outline"
-                    placeholder="Company"
-                  />
-                </v-col>
-                <v-col cols="6">
-                  <v-text-field placeholder="Job title" />
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field prepend-icon="mdi-mail" placeholder="Email" />
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field
-                    type="tel"
-                    prepend-icon="mdi-phone"
-                    placeholder="(000) 000 - 0000"
-                  />
-                </v-col>
-                <v-col cols="12">
-                  <v-text-field prepend-icon="mdi-text" placeholder="Notes" />
-                </v-col>
-              </v-row>
-            </v-container>
-            <v-card-actions>
-              <v-btn text color="primary">More</v-btn>
-              <v-spacer />
-              <v-btn text color="primary" @click="dialog = false">Cancel</v-btn>
-              <v-btn text @click="dialog = false">Save</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+<!--        <v-btn-->
+<!--          bottom-->
+<!--          color="pink"-->
+<!--          dark-->
+<!--          fab-->
+<!--          fixed-->
+<!--          right-->
+<!--          @click="dialog = !dialog"-->
+<!--        >-->
+<!--          <v-icon>mdi-plus</v-icon>-->
+<!--        </v-btn>-->
+<!--        <v-dialog v-model="dialog" width="800px">-->
+<!--          <v-card>-->
+<!--            <v-card-title class="grey darken-2">-->
+<!--              Create contact-->
+<!--            </v-card-title>-->
+<!--            <v-container>-->
+<!--              <v-row class="mx-2">-->
+<!--                <v-col class="align-center justify-space-between" cols="12">-->
+<!--                  <v-row align="center" class="mr-0">-->
+<!--                    <v-avatar size="40px" class="mx-3">-->
+<!--                      <img-->
+<!--                        src="//ssl.gstatic.com/s2/oz/images/sge/grey_silhouette.png"-->
+<!--                        alt=""-->
+<!--                      />-->
+<!--                    </v-avatar>-->
+<!--                    <v-text-field placeholder="Name" />-->
+<!--                  </v-row>-->
+<!--                </v-col>-->
+<!--                <v-col cols="6">-->
+<!--                  <v-text-field-->
+<!--                    prepend-icon="mdi-account-card-details-outline"-->
+<!--                    placeholder="Company"-->
+<!--                  />-->
+<!--                </v-col>-->
+<!--                <v-col cols="6">-->
+<!--                  <v-text-field placeholder="Job title" />-->
+<!--                </v-col>-->
+<!--                <v-col cols="12">-->
+<!--                  <v-text-field prepend-icon="mdi-mail" placeholder="Email" />-->
+<!--                </v-col>-->
+<!--                <v-col cols="12">-->
+<!--                  <v-text-field-->
+<!--                    type="tel"-->
+<!--                    prepend-icon="mdi-phone"-->
+<!--                    placeholder="(000) 000 - 0000"-->
+<!--                  />-->
+<!--                </v-col>-->
+<!--                <v-col cols="12">-->
+<!--                  <v-text-field prepend-icon="mdi-text" placeholder="Notes" />-->
+<!--                </v-col>-->
+<!--              </v-row>-->
+<!--            </v-container>-->
+<!--            <v-card-actions>-->
+<!--              <v-btn text color="primary">More</v-btn>-->
+<!--              <v-spacer />-->
+<!--              <v-btn text color="primary" @click="dialog = false">Cancel</v-btn>-->
+<!--              <v-btn text @click="dialog = false">Save</v-btn>-->
+<!--            </v-card-actions>-->
+<!--          </v-card>-->
+<!--        </v-dialog>-->
       </v-app>
     </template>
   </div>
@@ -170,6 +177,7 @@
 <script>
 
 import UserRepository from './repository/UserRepository';
+import ChannelRepository from './repository/ChannelRepository';
 
 export default {
   name: "App",
@@ -177,18 +185,13 @@ export default {
     source: String
   },
   created() {
-    const uid = localStorage.getItem('uid')
-    if(uid !== undefined){
-      UserRepository.get(uid).then(res => {
-        this.channels = res.data.channels.map( e => ({ text: e, to: `/channel/${e}`}))
-      })
-    }
-
+    this.fetchChannel()
   },
   data: () => ({
     dialog: false,
     drawer: null,
     channels: [],
+    channelRender: [],
     items: [
       { icon: "mdi-contacts", text: "Channels" },
       { icon: "mdi-history", text: "Frequently contacted" },
@@ -219,6 +222,42 @@ export default {
       { icon: "mdi-cellphone-link", text: "App downloads" },
       { icon: "mdi-keyboard", text: "Go to the old version" }
     ]
-  })
+  }),
+  watch: {
+    channels() {
+      var channelList = []
+      this.channels.forEach(ch => {
+        ChannelRepository.get(ch).then( res => {
+          channelList.push({
+            text: res.data.name,
+            to: res.data.id
+          })
+        })
+      })
+      this.channelRender = channelList
+    }
+  },
+  methods: {
+    onCreateNewChannel(){
+      var channelName = prompt("Please enter channel name:", "Channel01");
+      if (channelName == null || channelName == "") {
+        console.log("User cancelled the prompt.")
+      } else {
+        ChannelRepository.create(channelName).then(res => {
+          console.log(res.data)
+          this.fetchChannel()
+        })
+        console.log(channelName)
+      }
+    },
+    fetchChannel(){
+      const uid = localStorage.getItem('uid')
+      if(uid !== undefined){
+        UserRepository.get(uid).then(res => {
+          this.channels = res.data.channels
+        })
+      }
+    },
+  }
 };
 </script>
