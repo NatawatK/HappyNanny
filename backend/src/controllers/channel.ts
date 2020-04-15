@@ -97,6 +97,9 @@ channelRouter.post('/addUser', checkAuth, async (req, res) => {
     const userToInsert = await getUserExcludeChannels(id)
     await addUserToMember({ channelId, user: userToInsert })
 
+    // TO-DO: do we also have to subscribe topic to members here?
+    // subscribeTopic(topic, email)
+
     const newChannel = await getChannel(channelId)
     return res.send(newChannel)
   } catch (err) {
@@ -173,6 +176,9 @@ channelRouter.post('/createEvent', checkAuth, async (req, res) => {
       return res.status(400).send('Authority required')
     }
     const createdEventId = await createEvent(req.body)
+    
+    // TO-DO: 
+    // publishMessage()
     
     return res.send({ ...req.body, id: createdEventId })
   } catch (err) {
