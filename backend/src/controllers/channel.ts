@@ -4,6 +4,7 @@ import { getUser, checkAuthority, addChannelToUser, removeChannelFromUser, remov
 import { check, validationResult } from 'express-validator'
 import { checkAuth } from '../middlewares/auth'
 import { getUserExcludeChannels } from '../models/helper'
+import { subscribeTopic, publishMessage, deleteTopic, unsubscribeTopic } from './services/notification'
 
 const channelRouter = express.Router()
 
@@ -90,8 +91,13 @@ channelRouter.post('/addUser', checkAuth, async (req, res) => {
     if (!hasAuthority) {
       return res.status(400).send('Authority required')
     }
+    // Subscribe new user to topic
+    const channel = await getChannel(channelId)
+    const targetUser = await getUser(id)
+    const { SubscriptionArn: subscriptionArn } = await subscribeTopic(channel.topicArn, targetUser.email)
+
     // Add channel to user.channel list
-    addChannelToUser({ targetId: id, channelId })
+    addChannelToUser({ targetId: id, channelId, subscriptionArn })
 
     // Add user to member list
     const userToInsert = await getUserExcludeChannels(id)
@@ -154,6 +160,7 @@ channelRouter.delete('/', checkAuth, async (req, res) => {
 
     // delete channel
     deleteChannel(channelId)
+    deleteTopic(channel.topicArn)
 
     return res.send('delete channel successful')
   } catch (err) {
@@ -165,7 +172,7 @@ channelRouter.delete('/', checkAuth, async (req, res) => {
 channelRouter.post('/createEvent', checkAuth, async (req, res) => {
   const { user } = req
   const userId = user.uid
-  const { channelId } = req.body
+  const { channelId, title, detail } = req.body
   // Check if user has the authority to createEvent for this channel
   try {
     const hasAuthority = checkAuthority({
@@ -177,8 +184,8 @@ channelRouter.post('/createEvent', checkAuth, async (req, res) => {
     }
     const createdEventId = await createEvent(req.body)
     
-    // TO-DO: 
-    // publishMessage()
+    const channel = await getChannel(channelId)
+    publishMessage(channel.topicArn, `${title} has been created`, detail)
     
     return res.send({ ...req.body, id: createdEventId })
   } catch (err) {
@@ -227,6 +234,10 @@ channelRouter.delete('/event', checkAuth, async (req, res) => {
       return res.status(400).send('Authority required')
     }
 
+    const event = await getEvent({ eventId, channelId })
+    const channel = await getChannel(channelId)
+    publishMessage(channel.topicArn, `${event.title} has been canceled`, event.detail)
+
     await deleteEvent({ channelId, eventId })
     
     const newChannel = getChannel(channelId)
@@ -255,8 +266,10 @@ channelRouter.put('/event', checkAuth, async (req, res) => {
     }
 
     await updateEvent({ channelId, eventId, event })
-    const newChannel = getChannel(channelId)
+    const newChannel = await getChannel(channelId)
     
+    publishMessage(newChannel.topicArn, `${event.title} has been updated`, event.detail)
+
     return res.send(newChannel)
   } catch (err) {
     return res.send(err.message)
