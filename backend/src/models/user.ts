@@ -1,6 +1,7 @@
 import { db, adminFirestoreFieldValue } from '../db'
 import { NoUserError } from '../errors'
 import get from 'lodash/get'
+import { unsubscribeTopic } from '../controllers/services/notification'
 
 // interfaces
 interface CreateUserInput {
@@ -8,6 +9,7 @@ interface CreateUserInput {
   firstName: string
   lastName: string
   gender: string
+  email: string
 }
 
 interface CheckAuthorityInput {
@@ -27,7 +29,7 @@ const getAllUsers = async () => {
 }
 
 // get user with id
-const getUser = async (userId: number) => {
+const getUser = async (userId: string) => {
   try {
     const doc = db.collection('users').doc(userId)
     const user = await doc.get()
@@ -84,11 +86,12 @@ const checkAuthority = async (input: CheckAuthorityInput) => {
 }
 
 // Add Channel to user.channel
-const addChannelToUser = (input: { targetId: string, channelId: string }) => {
+const addChannelToUser = (input: { targetId: string, channelId: string, subscriptionArn: string }) => {
   try {
-    const { targetId, channelId } = input
+    const { targetId, channelId, subscriptionArn } = input
     db.collection('users').doc(targetId).update({
-      channels: adminFirestoreFieldValue.arrayUnion(channelId)
+      channels: adminFirestoreFieldValue.arrayUnion(channelId),
+      subscribes: adminFirestoreFieldValue.arrayUnion(subscriptionArn)
     })
   } catch (err) {
     console.log(err)
@@ -97,11 +100,16 @@ const addChannelToUser = (input: { targetId: string, channelId: string }) => {
 }
 
 // Remove Channel from user
-const removeChannelFromUser = (input: { targetId: string, channelId: string }) => {
+const removeChannelFromUser = async(input: { targetId: string, channelId: string }) => {
   try {
     const { targetId, channelId } = input
+    const { channels, subscribes } = await getUser(targetId)
+    const subscriptionArn = subscribes[channels.find(channelId)]
+    unsubscribeTopic(subscriptionArn)
+
     db.collection('users').doc(targetId).update({
-      channels: adminFirestoreFieldValue.arrayRemove(channelId)
+      channels: adminFirestoreFieldValue.arrayRemove(channelId),
+      subscribes: adminFirestoreFieldValue.arrayUnion(subscriptionArn)
     })
   } catch (err) {
     console.log(err)

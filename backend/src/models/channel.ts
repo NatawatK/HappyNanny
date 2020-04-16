@@ -68,24 +68,21 @@ const createChannel = async (input: CreateChannelInput) => {
     input['owner'] = await getUserExcludeChannels(input.userId)
     const docRef = db.collection('channels').doc()
     input['id'] = docRef.id
-    
-    // TO-DO please help me here
-    // It is a topic to be subscribed of the channel; save this into database
 
-    // const { TopicArn } = await createTopic(input.name)
-    // input['TopicArn'] = TopicArn
+    const { TopicArn } = await createTopic(input.name)
+    input['topicArn'] = TopicArn
     
     docRef.set(input)
 
     // Add channel for all users
-    members.forEach(member => {
+    members.forEach(async(member) => {
+      const { SubscriptionArn } = await subscribeTopic(TopicArn, member.email)
       const memberRef = db.collection('users').doc(member.userId)
       memberRef.update({
-        channels: adminFirestoreFieldValue.arrayUnion(docRef.id)
+        channels: adminFirestoreFieldValue.arrayUnion(docRef.id),
+        subscribes: adminFirestoreFieldValue.arrayUnion(SubscriptionArn)
       })
       
-      // TO-DO: do we also have to subscribe topic to all members here?
-      // subscribeTopic(input.name, member)
     })
   
     return input
