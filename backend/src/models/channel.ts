@@ -75,12 +75,10 @@ const createChannel = async (input: CreateChannelInput) => {
     docRef.set(input)
 
     // Add channel for all users
-    members.forEach(async(member) => {
-      const { SubscriptionArn } = await subscribeTopic(TopicArn, member.email)
+    members.forEach(member => {
       const memberRef = db.collection('users').doc(member.userId)
       memberRef.update({
-        channels: adminFirestoreFieldValue.arrayUnion(docRef.id),
-        subscribes: adminFirestoreFieldValue.arrayUnion(SubscriptionArn)
+        channels: adminFirestoreFieldValue.arrayUnion(docRef.id)
       })
       
     })

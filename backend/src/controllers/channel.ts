@@ -94,10 +94,10 @@ channelRouter.post('/addUser', checkAuth, async (req, res) => {
     // Subscribe new user to topic
     const channel = await getChannel(channelId)
     const targetUser = await getUser(id)
-    const { SubscriptionArn: subscriptionArn } = await subscribeTopic(channel.topicArn, targetUser.email)
+    subscribeTopic(channel.topicArn, targetUser.email)
 
     // Add channel to user.channel list
-    addChannelToUser({ targetId: id, channelId, subscriptionArn })
+    addChannelToUser({ targetId: id, channelId })
 
     // Add user to member list
     const userToInsert = await getUserExcludeChannels(id)
@@ -126,6 +126,11 @@ channelRouter.delete('/user', checkAuth, async (req, res) => {
     if (!hasAuthority) {
       return res.status(400).send('Authority required')
     }
+    
+    const channel = await getChannel(channelId)
+    const targetUser = await getUser(id)
+    unsubscribeTopic(channel.topicArn, targetUser.email)
+
     // remove channel from user
     removeChannelFromUser({ targetId: id, channelId })
     
