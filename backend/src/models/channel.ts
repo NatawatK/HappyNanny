@@ -2,7 +2,7 @@ import { db, adminFirestoreFieldValue } from '../db'
 import { NoUserError } from '../errors'
 import { getUserExcludeChannels } from './helper'
 import omit from 'lodash/omit'
-import { createTopic, subscribeTopic } from '../controllers/services/notification'
+import { createTopic } from '../controllers/services/notification'
 
 interface CreateChannelInput {
   name: string
