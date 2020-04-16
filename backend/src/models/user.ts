@@ -86,12 +86,11 @@ const checkAuthority = async (input: CheckAuthorityInput) => {
 }
 
 // Add Channel to user.channel
-const addChannelToUser = (input: { targetId: string, channelId: string, subscriptionArn: string }) => {
+const addChannelToUser = (input: { targetId: string, channelId: string }) => {
   try {
-    const { targetId, channelId, subscriptionArn } = input
+    const { targetId, channelId } = input
     db.collection('users').doc(targetId).update({
       channels: adminFirestoreFieldValue.arrayUnion(channelId),
-      subscribes: adminFirestoreFieldValue.arrayUnion(subscriptionArn)
     })
   } catch (err) {
     console.log(err)
@@ -103,13 +102,9 @@ const addChannelToUser = (input: { targetId: string, channelId: string, subscrip
 const removeChannelFromUser = async(input: { targetId: string, channelId: string }) => {
   try {
     const { targetId, channelId } = input
-    const { channels, subscribes } = await getUser(targetId)
-    const subscriptionArn = subscribes[channels.find(channelId)]
-    unsubscribeTopic(subscriptionArn)
 
     db.collection('users').doc(targetId).update({
-      channels: adminFirestoreFieldValue.arrayRemove(channelId),
-      subscribes: adminFirestoreFieldValue.arrayUnion(subscriptionArn)
+      channels: adminFirestoreFieldValue.arrayRemove(channelId)
     })
   } catch (err) {
     console.log(err)
