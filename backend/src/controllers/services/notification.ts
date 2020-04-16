@@ -106,22 +106,33 @@ export async function unsubscribeTopic(topic: string, email: string) {
   }
 }
 
-
 export function publishMessage(
   topic: string,
   subject: string,
-  message?: string
+  message?: {
+    title: string;
+    detail: string;
+    startTime: string;
+    endTime: string;
+    alertTime: string;
+  }
 ) {
+  let Message = "";
+  if (message) {
+    const { detail = "", startTime = "", endTime = "" } = message;
+    Message += detail && `${detail}\n\n`;
+    Message += startTime && `Event Started: ${startTime}\n`;
+    Message += endTime && `Event Ended: ${endTime}\n`;
+  }
   const params = {
     TopicArn: topic,
     Subject: subject,
-    Message: message,
+    Message,
   };
   return new Promise<SNS.Types.PublishResponse>((resolve, reject) => {
     sns.publish(params, (err, data) => {
       if (err) reject(err);
       else resolve(data);
-      console.log(data);
     });
   });
 }

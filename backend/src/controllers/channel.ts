@@ -103,9 +103,6 @@ channelRouter.post('/addUser', checkAuth, async (req, res) => {
     const userToInsert = await getUserExcludeChannels(id)
     await addUserToMember({ channelId, user: userToInsert })
 
-    // TO-DO: do we also have to subscribe topic to members here?
-    // subscribeTopic(topic, email)
-
     const newChannel = await getChannel(channelId)
     return res.send(newChannel)
   } catch (err) {
@@ -177,7 +174,7 @@ channelRouter.delete('/', checkAuth, async (req, res) => {
 channelRouter.post('/createEvent', checkAuth, async (req, res) => {
   const { user } = req
   const userId = user.uid
-  const { channelId, title, detail } = req.body
+  const { channelId, title, ...message } = req.body
   // Check if user has the authority to createEvent for this channel
   try {
     const hasAuthority = checkAuthority({
@@ -190,7 +187,7 @@ channelRouter.post('/createEvent', checkAuth, async (req, res) => {
     const createdEventId = await createEvent(req.body)
     
     const channel = await getChannel(channelId)
-    publishMessage(channel.topicArn, `${title} has been created`, detail)
+    publishMessage(channel.topicArn, `${title} has been created`, { ...message, title })
     
     return res.send({ ...req.body, id: createdEventId })
   } catch (err) {
@@ -241,7 +238,7 @@ channelRouter.delete('/event', checkAuth, async (req, res) => {
 
     const event = await getEvent({ eventId, channelId })
     const channel = await getChannel(channelId)
-    publishMessage(channel.topicArn, `${event.title} has been canceled`, event.detail)
+    publishMessage(channel.topicArn, `${event.title} has been canceled`, event)
 
     await deleteEvent({ channelId, eventId })
     
@@ -273,7 +270,7 @@ channelRouter.put('/event', checkAuth, async (req, res) => {
     await updateEvent({ channelId, eventId, event })
     const newChannel = await getChannel(channelId)
     
-    publishMessage(newChannel.topicArn, `${event.title} has been updated`, event.detail)
+    publishMessage(newChannel.topicArn, `${event.title} has been updated`, event)
 
     return res.send(newChannel)
   } catch (err) {
