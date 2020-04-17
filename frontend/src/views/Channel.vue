@@ -9,17 +9,20 @@
         </v-row>
       </v-col>
     </v-layout>
+    <event-dialog/>
   </div>
 </template>
 
 <script>
   import ChannelRepository from '../repository/ChannelRepository';
   import EventCard from '../components/EventCard';
+  import EventDialog from '../components/EventDialog';
 
   export default {
     name: "Channel",
     components: {
       EventCard,
+      EventDialog
     },
     created() {
       console.log(this.$route.params)
@@ -31,8 +34,12 @@
       owner: null,
       members: null,
       events: null,
+      dialog: false,
     }),
     watch: {
+      $route(){
+        this.channelId = this.$route.params.id
+      },
       channelId() {
         ChannelRepository.get(this.channelId).then(({data}) => {
           console.log(data)

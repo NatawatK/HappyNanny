@@ -15,5 +15,17 @@ export default {
       members: []
     }
     return Repository.post(endpoint, body)
+  },
+  createEvent(channelId, event){
+    const { title, detail, startTime, endTime } = event
+    const payload = {
+      channelId: channelId,
+      title: title,
+      detail: detail,
+      startTime: startTime,
+      endTime: endTime,
+      alertTime: ""
+    }
+    return Repository.post(`${endpoint}/createEvent`, payload)
   }
 }

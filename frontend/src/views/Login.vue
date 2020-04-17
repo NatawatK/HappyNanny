@@ -99,7 +99,7 @@ export default {
           // this.$router.push({ name: "Home" });
           uid = res.user.uid
           console.log(res)
-          UserRepository.create(uid, this.firstName, this.lastName, "Male").then(() => {
+          UserRepository.create(uid, this.firstName, this.lastName, "Male", this.email).then(() => {
             this.$router.push({ name: "Home" });
           }).catch((err) => {
             alert(err)
