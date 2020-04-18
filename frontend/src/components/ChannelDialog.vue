@@ -60,7 +60,7 @@
       dialog(val){
         if(val){
           this.newMembers = this.members
-          this.fetchUser()
+          if(this.users.length == 0)  this.fetchUser()
         }
       }
     },
@@ -71,7 +71,6 @@
         })
       },
       close() {
-        this.users = []
         this.newMembers = []
         this.dialog = false
       },
@@ -91,6 +90,7 @@
             console.log(res)
           })
         })
+        this.$emit('members-change')
         this.close()
       }
     }

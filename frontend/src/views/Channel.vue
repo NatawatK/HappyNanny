@@ -2,7 +2,7 @@
   <div style="margin: 20px">
     <h1>Channel: {{ name }}</h1>
     <h2>Owner: {{ ownerName }}</h2>
-    <channel-dialog :members="members" :channel-id="channelId"/>
+    <channel-dialog :members="members" :channel-id="channelId" @members-change="fetchChannel"/>
     <v-layout>
       <v-col class="align-center-center">
         <v-row v-for="(event, index) in events" :key="event.id">
