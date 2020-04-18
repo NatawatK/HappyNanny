@@ -1,0 +1,2 @@
+export const SET_CHANNELS = 'SET_CHANNELS'
+export const SET_CHANNEL_ID = 'SET_CHANNEL_ID'
