@@ -10,10 +10,10 @@
     >
       <v-icon>mdi-plus</v-icon>
     </v-btn>
-    <v-dialog v-model="dialog" width="800px">
+    <v-dialog v-model="dialog" width="800px" persistent>
       <v-card>
         <v-card-title class="">
-          Create Event<v-icon>arrow_downward</v-icon>
+          {{ editMode ? "Edit Event" : "Create New Event"}}
         </v-card-title>
         <v-container>
           <v-row class="mx-2">
@@ -134,13 +134,13 @@
           </v-row>
         </v-container>
         <v-card-actions>
-          <v-btn v-if="editMode" color="danger" @click="deleteEvent">Delete</v-btn>
+          <v-btn v-if="editMode" color="error" @click="deleteEvent">Delete</v-btn>
           <v-spacer />
           <v-btn text color="primary" @click="close">Cancel</v-btn>
           <v-btn color="success" @click="save">{{ editMode? "Save" : "Create"}}</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>s
+    </v-dialog>
   </div>
 </template>
 
@@ -151,9 +151,21 @@
   export default {
     name: "EventDialog.vue",
     props: {
-      editMode: {
-        type: Boolean,
-        default: () => false
+      editItem: {
+        type: Object,
+      },
+      editIndex: {
+        type: Number,
+        required:true,
+        default: () => -1
+      },
+      active: {
+        type: Boolean
+      },
+    },
+    computed:{
+      editMode() {
+        return this.editIndex !== -1
       }
     },
     data : () => ({
@@ -173,17 +185,34 @@
         endTime: "",
       },
     }),
+    watch: {
+      active(){
+        this.item = this.editItem
+        this.startDate = this.ISOtoDate(this.item.startTime)
+        this.endDate = this.ISOtoDate(this.item.endTime)
+        this.startTime = this.ISOtoTime(this.item.startTime)
+        this.endTime = this.ISOtoTime(this.item.endTime)
+        this.dialog = this.active
+      }
+    },
     methods:{
       save(){
         const channelId = this.$router.currentRoute.params.id
         this.item.startTime = this.dateTimetoISO(this.startDate, this.startTime)
         this.item.endTime = this.dateTimetoISO(this.endDate, this.endTime)
-        console.log(channelId, this.item)
-        if (this.editMode)
+        if (this.editMode){
           this.$emit('edit-event', this.item)
-        else{
-          this.$emit('create-event', this.item)
-          ChannelRepository.createEvent(channelId, event)
+          ChannelRepository.editEvent(channelId, this.item.id).then(() => {
+            alert('Event edited')
+          })
+        }
+        else {
+          ChannelRepository.createEvent(channelId, this.item).then(res => {
+            if(res.data.id)
+              this.$emit('create-event', this.item)
+          }).catch(err => {
+            alert('create event', err)
+          })
         }
         this.close()
       },
@@ -204,12 +233,25 @@
         this.item = {}
       },
       deleteEvent(){
-        this.$emit('delete-event')
+        const result = confirm("Want to delete?");
+        if (result) {
+          //Logic to delete the item
+          const channelId = this.$router.currentRoute.params.id
+          ChannelRepository.deleteEvent(channelId, this.item.id)
+          this.$emit('delete-event', this.item.id)
+          this.close()
+        }
       },
       dateTimetoISO(date, time){
         const datetime = moment(`${date} ${time}`)
         console.log(date, datetime, datetime.format())
         return datetime.format()
+      },
+      ISOtoDate(iso){
+        return moment(iso).format("YYYY-MM-DD")
+      },
+      ISOtoTime(iso){
+        return moment(iso).format("HH:MM")
       }
     }
   }
