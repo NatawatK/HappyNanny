@@ -9,12 +9,13 @@ export default {
   get(userId){
     return Repository.get(`${endpoint}/${userId}`)
   },
-  create(userId, firstName, lastName, gender){
+  create(userId, firstName, lastName, gender, email){
     let body = {
       userId: userId,
       firstName: firstName,
       lastName: lastName,
-      gender: gender
+      gender: gender,
+      email: email
     }
     return Repository.post(endpoint, body)
   }

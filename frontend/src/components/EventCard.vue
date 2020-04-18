@@ -1,13 +1,17 @@
 <template>
   <div>
-    <v-card width="500px">
-      <v-card-title>{{ this.details.title }}</v-card-title>
-      <v-card-text>
-        <span>Start : {{ this.convertToDate(details.startTime) }} {{ this.convertToTime(details.startTime) }}</span><br>
-        <span>End : {{ this.convertToDate(details.endTime) }} {{ this.convertToTime(details.endTime) }}</span><br>
-        <span>{{this.details.detail}}</span>
-      </v-card-text>
-    </v-card>
+    <v-hover
+      v-slot:default="{ hover }"
+    >
+      <v-card width="500px" :elevation="hover? 8:2" @click="$emit('click')">
+        <v-card-title>{{ details.title }}</v-card-title>
+        <v-card-text>
+          <span>Start : {{ convertToDate(details.startTime) }} {{ convertToTime(details.startTime) }}</span><br>
+          <span>End : {{ convertToDate(details.endTime) }} {{ convertToTime(details.endTime) }}</span><br>
+          <span>{{details.detail}}</span>
+        </v-card-text>
+      </v-card>
+    </v-hover>
   </div>
 </template>
 
