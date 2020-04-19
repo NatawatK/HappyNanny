@@ -201,8 +201,9 @@
         this.item.startTime = this.dateTimetoISO(this.startDate, this.startTime)
         this.item.endTime = this.dateTimetoISO(this.endDate, this.endTime)
         if (this.editMode){
-          this.$emit('edit-event', this.item)
-          ChannelRepository.editEvent(channelId, this.item.id).then(() => {
+          console.log("editting", this.item)
+          ChannelRepository.editEvent(channelId, this.item).then(() => {
+            this.$emit('edit-event', this.item)
             alert('Event edited')
           })
         }
@@ -237,8 +238,10 @@
         if (result) {
           //Logic to delete the item
           const channelId = this.$router.currentRoute.params.id
-          ChannelRepository.deleteEvent(channelId, this.item.id)
-          this.$emit('delete-event', this.item.id)
+          ChannelRepository.deleteEvent(channelId, this.item.id).then((res) => {
+            console.log('delete event', res)
+            this.$emit('delete-event', this.item.id)
+          })
           this.close()
         }
       },
