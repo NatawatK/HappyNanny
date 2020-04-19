@@ -251,8 +251,8 @@ channelRouter.delete('/event', checkAuth, async (req, res) => {
 
 // Update Event
 channelRouter.put('/event', checkAuth, async (req, res) => {
-  const { channelId, eventId } = req.body
-  const event = req.body
+  const { channelId, eventId, event } = req.body
+  // const event = req.body
   if (!channelId || !eventId) {
     return res.status(400).send('wrong params')
   }

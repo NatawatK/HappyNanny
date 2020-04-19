@@ -52,11 +52,13 @@ export default {
       data: payload
     })
   },
-  editEvent(channelId, eventId, event) {
+  editEvent(channelId,  event) {
     const payload = {
       channelId: channelId,
-      eventId: eventId,
-      ...event
+      eventId: event.id,
+      event: {
+        ...event
+      }
     }
     return Repository.put(`${endpoint}/event`, payload)
   }
