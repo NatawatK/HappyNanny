@@ -2,7 +2,7 @@ import { db, adminFirestoreFieldValue } from '../db'
 import { NoUserError } from '../errors'
 import { getUserExcludeChannels } from './helper'
 import omit from 'lodash/omit'
-import { createTopic } from '../controllers/services/notification'
+import { createTopic, subscribeTopic } from '../controllers/services/notification'
 
 interface CreateChannelInput {
   name: string
@@ -76,6 +76,7 @@ const createChannel = async (input: CreateChannelInput) => {
 
     // Add channel for all users
     members.forEach(member => {
+      subscribeTopic(TopicArn, member.email)
       const memberRef = db.collection('users').doc(member.userId)
       memberRef.update({
         channels: adminFirestoreFieldValue.arrayUnion(docRef.id)
