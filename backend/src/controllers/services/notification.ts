@@ -1,6 +1,7 @@
 import AWS, { SNS } from "aws-sdk";
 import { isEmpty } from "lodash";
 import { v4 as uuidv4 } from "uuid";
+import moment from "moment-timezone";
 
 export const sns = new AWS.SNS({ region: "ap-southeast-1" });
 
@@ -121,8 +122,16 @@ export function publishMessage(
   if (message) {
     const { detail = "", startTime = "", endTime = "" } = message;
     Message += detail && `${detail}\n\n`;
-    Message += startTime && `Event Started: ${startTime}\n`;
-    Message += endTime && `Event Ended: ${endTime}\n`;
+    Message +=
+      startTime &&
+      `Event Started: ${moment(startTime)
+        .tz("Asia/Bangkok")
+        .format("ddd DD MMMM YYYY, h:mm:ss A")}\n`;
+    Message +=
+      endTime &&
+      `Event Ended: ${moment(endTime)
+        .tz("Asia/Bangkok")
+        .format("ddd DD MMMM YYYY, h:mm:ss A")}\n`;
   }
   const params = {
     TopicArn: topic,
