@@ -191,7 +191,7 @@ channelRouter.post('/createEvent', checkAuth, async (req, res) => {
     
     return res.send({ ...req.body, id: createdEventId })
   } catch (err) {
-    return res.send(err.message)
+    return res.status(400).send(err.message)
   }
 })
 
@@ -274,7 +274,7 @@ channelRouter.put('/event', checkAuth, async (req, res) => {
 
     return res.send(newChannel)
   } catch (err) {
-    return res.send(err.message)
+    return res.status(400).send(err.message)
   }
 })
 
