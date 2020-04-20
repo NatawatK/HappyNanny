@@ -16,6 +16,12 @@ export default {
     }
     return Repository.post(endpoint, body)
   },
+  deleteChannel(channelId){
+    let body = {
+      channelId: channelId
+    }
+    return Repository.delete(endpoint, { data:body })
+  },
   addUser(channelId, uid){
     let body = {
       id: uid,

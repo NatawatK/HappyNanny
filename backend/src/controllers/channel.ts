@@ -133,7 +133,7 @@ channelRouter.delete('/user', checkAuth, async (req, res) => {
     
     // remove user from members
     await removeUserFromMember({ targetId: id, channelId })
-    const newChannel = getChannel(channelId)
+    const newChannel = await getChannel(channelId)
     return res.send(newChannel)
   } catch (err) {
     return res.send(err.message)

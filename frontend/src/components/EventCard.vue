@@ -6,8 +6,8 @@
       <v-card width="500px" :elevation="hover? 8:2" @click="$emit('click')">
         <v-card-title>{{ details.title }}</v-card-title>
         <v-card-text>
-          <span>Start : {{ convertToDate(details.startTime) }} {{ convertToTime(details.startTime) }}</span><br>
-          <span>End : {{ convertToDate(details.endTime) }} {{ convertToTime(details.endTime) }}</span><br>
+          <span>Start : {{ convertToDate(details.startTime) }} </span><br>
+          <span>End : {{ convertToDate(details.endTime) }} </span><br>
           <span>{{details.detail}}</span>
         </v-card-text>
       </v-card>
@@ -16,6 +16,7 @@
 </template>
 
 <script>
+  import moment from 'moment'
   export default {
     name: "EventCard",
     props: {
@@ -36,18 +37,16 @@
     data: () => ({}),
     methods: {
       convertToDate(datetime){
-        const date = new Date(datetime)
-        const m = date.getMonth(); // returns 6
-        const d = date.getDay();  // returns 15
-        const y = date.getFullYear();  // returns 2012
-        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        const mlong = months[m];
-        return mlong + " " + d + ", " + y;
+        // const date = new Date(datetime)
+        // const m = date.getMonth(); // returns 6
+        // const d = date.getDay();  // returns 15
+        // const y = date.getFullYear();  // returns 2012
+        // const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        // const mlong = months[m];
+        // return mlong + " " + d + ", " + y;
+        return moment(datetime).format("llll")
       },
-      convertToTime(isoformat){
-        const date = new Date(isoformat)
-        return date.getHours() + ":" + date.getMinutes()
-      }
+
     }
   }
 </script>

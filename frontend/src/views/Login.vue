@@ -38,6 +38,7 @@
                   v-model="password"
                   label="Password"
                   type="password"
+                  v-on:keydown.enter="proceed"
                 />
               </v-form>
             </v-card-text>

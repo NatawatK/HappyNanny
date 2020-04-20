@@ -1,5 +1,6 @@
 import Vue from "vue";
 import App from "./App.vue";
+import Notification from 'vue-notification';
 import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
@@ -16,6 +17,8 @@ Vue.config.productionTip = false;
 //   render: h => h(App)
 // }).$mount("#app");
 
+const notification = Vue.use(Notification)
+
 let app;
 fb.auth.onAuthStateChanged(() => {
   if (!app) {
@@ -24,7 +27,9 @@ fb.auth.onAuthStateChanged(() => {
       router,
       vuetify,
       store,
+      notification,
       render: h => h(App)
     });
   }
 });
+

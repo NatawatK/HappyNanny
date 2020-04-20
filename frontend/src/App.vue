@@ -106,6 +106,7 @@
           </v-btn>
         </v-app-bar>
         <v-content>
+          <notifications group="main" position="bottom center" />
           <router-view></router-view>
         </v-content>
       </v-app>
@@ -151,11 +152,21 @@ export default {
       if (channelName == null || channelName == "") {
         console.log("User cancelled the prompt.")
       } else {
-        ChannelRepository.create(channelName).then(res => {
-          console.log(res.data)
+        ChannelRepository.create(channelName).then(() => {
+          this.$notify({
+            group: "main",
+            type: "success",
+            text: "New channel created"
+          })
           this.fetchChannel()
+        }).catch(err => {
+          this.$notify({
+            group: "main",
+            type: "error",
+            title: "Can't create channel",
+            text: err
+          })
         })
-        console.log(channelName)
       }
     },
     fetchChannel(){

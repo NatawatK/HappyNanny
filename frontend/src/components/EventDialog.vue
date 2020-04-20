@@ -204,15 +204,35 @@
           console.log("editting", this.item)
           ChannelRepository.editEvent(channelId, this.item).then(() => {
             this.$emit('edit-event', this.item)
-            alert('Event edited')
+            this.$notify({
+              group: "main",
+              type: "success",
+              text: "Edit Event successfully"
+            })
+          }).catch(err => {
+            this.$notify({
+              group: "main",
+              type: "error",
+              title: "Can't edit event",
+              text: err
+            })
           })
         }
         else {
-          ChannelRepository.createEvent(channelId, this.item).then(res => {
-            if(res.data.id)
+          ChannelRepository.createEvent(channelId, this.item).then(() => {
               this.$emit('create-event', this.item)
+              this.$notify({
+                group: "main",
+                type: "success",
+                text: "Created new event successfully"
+              })
           }).catch(err => {
-            alert('create event', err)
+            this.$notify({
+              group: "main",
+              type: "error",
+              title: "Can't create event",
+              text: err
+            })
           })
         }
         this.close()
@@ -238,9 +258,22 @@
         if (result) {
           //Logic to delete the item
           const channelId = this.$router.currentRoute.params.id
-          ChannelRepository.deleteEvent(channelId, this.item.id).then((res) => {
-            console.log('delete event', res)
-            this.$emit('delete-event', this.item.id)
+          const removingEventId = this.item.id
+          ChannelRepository.deleteEvent(channelId, this.item.id).then(() => {
+            this.$emit('delete-event', removingEventId)
+            this.$notify({
+              group: "main",
+              type: "success",
+              title: "Delete event successfully",
+              text: ""
+            })
+          }).catch(err => {
+            this.$notify({
+              group: "main",
+              type: "error",
+              title: "Can't delete event",
+              text: err
+            })
           })
           this.close()
         }

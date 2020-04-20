@@ -2,12 +2,13 @@
   <div style="margin: 20px">
     <h1>Channel: {{ name }}</h1>
     <h2>Owner: {{ ownerName }}</h2>
-    <channel-dialog :members="members" :channel-id="channelId" @members-change="fetchChannel"/>
+    <channel-dialog :members="members" :channel-id="channelId" @members-change="updateMember"/>
     <v-layout>
       <v-col class="align-center-center">
         <v-row v-for="(event, index) in events" :key="event.id">
           <event-card :details="event" @click="onEditEvent(event, index)"/>
         </v-row>
+        <h2 v-if="!events || events.length === 0">No event here. Create first.</h2>
       </v-col>
     </v-layout>
     <event-dialog
@@ -36,7 +37,6 @@
       ChannelDialog
     },
     created() {
-      console.log(this.$route.params)
       this.channelId = this.$route.params.id
     },
     data : () => ({
@@ -89,7 +89,10 @@
           this.owner = owner
           this.events = events
         })
-      }
+      },
+      updateMember(members){
+        this.members = members
+      },
     }
   }
 </script>

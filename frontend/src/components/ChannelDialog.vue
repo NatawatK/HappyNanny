@@ -3,7 +3,7 @@
     <v-row justify="end">
       <v-dialog v-model="dialog" persistent max-width="500">
         <template v-slot:activator="{ on }">
-          <v-btn color="primary" dark v-on="on">Settings</v-btn>
+          <v-btn color="primary" dark v-on="on" @click="$emit('click')">Settings</v-btn>
         </template>
         <v-card>
           <v-card-title class="headline">Channel Setting</v-card-title>
@@ -19,6 +19,7 @@
             ></v-autocomplete>
           </v-card-text>
           <v-card-actions>
+            <v-btn color="error darken-1" text @click="deleteChannel">Delete</v-btn>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" text @click="close">Cancel</v-btn>
             <v-btn color="green darken-1" text @click="save">Save</v-btn>
@@ -70,6 +71,26 @@
           this.users = res.data
         })
       },
+      deleteChannel(){
+        const result = confirm("Want to delete this channel?");
+        if (result) {
+          //Logic to delete the item
+          const channelId = this.$router.currentRoute.params.id
+          ChannelRepository.deleteChannel(channelId).then(() => {
+            this.close()
+            this.$router.push('/')
+            location.reload()
+          }).catch(err => {
+            this.$notify({
+              group: "main",
+              type: "error",
+              title: "Can't delete channel",
+              text: err
+            })
+          })
+          this.close()
+        }
+      },
       close() {
         this.newMembers = []
         this.dialog = false
@@ -79,18 +100,51 @@
         const toAdd = _.difference(this.newMembers, this.members.map(e => e.userId))
         const toRemove = _.difference(this.members.map(e => e.userId), this.newMembers)
         console.log('add', toAdd)
-        toAdd.forEach( uid => {
-          ChannelRepository.addUser(this.channelId, uid).then(res => {
-            console.log(res)
-          })
+        var failed = false
+        var updatedMembers = []
+        toAdd.forEach(async uid => {
+          try{
+            const res = await ChannelRepository.addUser(this.channelId, uid)
+            updatedMembers = res.data.members
+            console.log(updatedMembers)
+
+            this.$emit('members-change', updatedMembers)
+          }
+          catch(err) {
+            this.$notify({
+              group: "main",
+              type: "error",
+              title: "Can't add new user",
+              text: err
+            })
+            failed = true
+          }
         })
         console.log('remove', toRemove)
-        toRemove.forEach( uid => {
-          ChannelRepository.removeUser(this.channelId, uid).then(res => {
-            console.log(res)
-          })
+        toRemove.forEach(async uid => {
+          try {
+            const res = await ChannelRepository.removeUser(this.channelId, uid)
+            updatedMembers = res.data.members
+            console.log(updatedMembers)
+            this.$emit('members-change', updatedMembers)
+          }
+          catch(err) {
+            this.$notify({
+              group: "main",
+              type: "error",
+              title: "Can't remove new user",
+              text: err
+            })
+            failed = true
+          }
         })
-        this.$emit('members-change')
+        if ( !failed ) {
+          this.$notify({
+            group: "main",
+            type: "success",
+            title: "Edit members successfully",
+          })
+        }
         this.close()
       }
     }
