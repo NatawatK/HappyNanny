@@ -37,15 +37,14 @@ You may have to pass all the Prerequisites in the Get Started section before you
 
 ### Extends Prerequisites
 
+* In aws console, create ECS cluster named `happynanny-cluster`
 * Install aws-cli, *for more information visit https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html.*
 * Create another IAM user for your aws-cli. For the simpliest way you can attach `AdministratorAccess` for aws-cli user.
 * Configure your credential with `aws-cli` in your local machine, for more information visit https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html.
-* In aws console create ECS cluster named `happynanny-cluster`
-
 
 ### Deploying
 
-In AWS console direct to `Identity and Access Management` to get your own AWS ID and place your ID in `deploy.sh` in the root directory (You also able to change the region as you prefer; In this example, we use Singapore region)
+In AWS console, direct to `Identity and Access Management` to get your own AWS ID and place your ID in `deploy.sh` in the root directory (You also able to change the region as you prefer; In this example, we use Singapore region)
 ```
 <PLACE_YOUR_ID_HERE>.dkr.ecr.ap-southeast-1.amazonaws.com
 ```
