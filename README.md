@@ -23,7 +23,7 @@ In this project, we already separate docker config for both development and prod
 To build and run predefined development
 
 ```
-docker-compose -f docker-compose.yml -f development.yml --build up
+docker-compose -f docker-compose.yml -f development.yml up --build
 ```
 
 From this, you will get the application runs on http://localhost/ via reverse proxy hosting
