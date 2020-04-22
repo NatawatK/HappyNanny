@@ -60,7 +60,17 @@ Deploy each service using deploy.sh:
 * You may get an **error telling you that you can't update the service**. This may happen because you don't have the selected service in `happynanny-cluster` cluster yet. 
 Before the error shown, we already push docker image to you ECR. So you can create `task definition` and `service` in your cluster. You can set the service name to `happynanny-service`, with this name you won't have to change service name in `deploy.sh`
 
-* **If you use fargate to deploy**, deploying reverseproxy, you have to change `nginx.conf` in reverseproxy directory by changing the upstream URL of both frontend and backend that use docker url to localhost.
+* **If you use fargate to deploy**, deploying reverseproxy, you have to change `nginx.conf` in reverseproxy directory by changing the upstream URL of both frontend and backend that use docker service url to localhost.
+```
+    upstream backend {
+        server localhost:9900;
+    }
+
+    upstream frontend-web {
+        server localhost:8080;
+    }
+```
+***Keep in mind:** Switching back to run in your local machine, you have to change it back to use docker service url.*
 
 
 ## Built With
