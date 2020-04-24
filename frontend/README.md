@@ -1,4 +1,6 @@
-# frontend
+# Frontend of HappyNanny
+
+If you run all of these services via `docker-compose`, you can ignore this page. (only for standalone frontend seytup)
 
 ## Project setup
 ```
