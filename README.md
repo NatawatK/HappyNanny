@@ -75,9 +75,8 @@ Before the error shown, we already push docker image to you ECR. So you can crea
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [Vue.js](https://vuejs.org/) - The web framework used
+* [Vuetify](https://vuetifyjs.com/en/) - The component framework
 
 
 ## Authors
