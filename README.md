@@ -82,5 +82,6 @@ Before the error shown, we already push docker image to you ECR. So you can crea
 ## Authors
 
 * **Sirawit Tantiphuwanart** - [5930486521-ST](https://github.com/5930486521-ST/)
+* **Natawat Kwanpum** - [Natawatk](https://github.com/natawatk)
 
 
