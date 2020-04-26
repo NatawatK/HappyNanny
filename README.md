@@ -32,7 +32,7 @@ AWS_SECRET_ACCESS_KEY=<YOUR_AWS_SECRET_ACCESS_KEY>
   "client_x509_cert_url": <Your Client Cert Url>
 }
 ```
-* Save the private key file inside /backend directory and rename it to happy-nanny-11d71-firebase-adminsdk-dk8k5-683bb7bc89.json
+* Save the private key file inside /backend directory and rename it to *happy-nanny-11d71-firebase-adminsdk-dk8k5-683bb7bc89.json*
 * Do not commit this private key to any public repository!
 
 ### Installing
